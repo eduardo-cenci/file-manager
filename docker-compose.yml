@@ -1,0 +1,75 @@
+services:
+  app:
+    build:
+      context: .
+      args:
+        APP_ENV: ${APP_ENV}
+    ports:
+      - "${APP_PORT}:80"
+    volumes:
+      - ./storage:/app/storage
+    develop:
+      watch:
+        - action: sync
+          path: ./src
+          target: /app/src
+        - action: sync
+          path: ./config
+          target: /app/config
+        - action: sync
+          path: ./public
+          target: /app/public
+        - action: sync
+          path: ./views
+          target: /app/views
+        - action: sync
+          path: ./database
+          target: /app/database
+        - action: sync+restart
+          path: ./apache.conf
+          target: /etc/apache2/sites-available/000-default.conf
+        - action: rebuild
+          path: ./Dockerfile
+        - action: rebuild
+          path: ./composer.json
+        - action: rebuild
+          path: ./composer.lock
+        - action: rebuild
+          path: ./php.ini-development
+        - action: rebuild
+          path: ./php.ini-production
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    image: mysql:8.4.10
+    restart: unless-stopped
+    ports:
+      - "${DB_PORT}:3306"
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-uroot",
+          "-p${DB_ROOT_PASSWORD}",
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 10s
+
+volumes:
+  mysql_data:

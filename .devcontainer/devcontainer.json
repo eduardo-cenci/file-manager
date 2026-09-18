@@ -1,0 +1,16 @@
+{
+  "name": "PHP",
+  "dockerComposeFile": "../docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/app",
+  "customizations": {
+    "vscode": {
+      "settings": {},
+      "extensions": [
+        "bmewburn.vscode-intelephense-client",
+        "junstyle.php-cs-fixer",
+        "bradlc.vscode-tailwindcss"
+      ]
+    }
+  }
+}

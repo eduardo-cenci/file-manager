@@ -1,0 +1,10 @@
+.git/
+.env
+
+storage/
+vendor/
+
+.DS_Store
+
+.vscode/
+.devcontainer/
